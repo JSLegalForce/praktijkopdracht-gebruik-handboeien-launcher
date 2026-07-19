@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Praktijkopdracht – Gebruik handboeien – JS Legal Force</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --blauw: #1a2a5e; --blauw-mid: #243580; --blauw-licht: #2d4099; --zilver: #8a9ab5; --wit: #ffffff; --grijs-licht: #f2f4f8; --grijs-mid: #dde2ef; --tekst: #1a2a5e; --tekst-mid: #4a5578; --groen: #1a7a4a; --groen-licht: #e6f4ed; --shadow: 0 4px 24px rgba(26,42,94,0.10); --radius: 12px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--grijs-licht); color: var(--tekst); min-height: 100vh; display: flex; flex-direction: column; }
+    .quiz-header { background: var(--blauw); }
+    .header-inner { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px 24px; }
+    .header-schild { width: 36px; height: 42px; flex-shrink: 0; }
+    .logo-tekst { font-weight: 700; font-size: 1.35rem; letter-spacing: 0.04em; color: var(--wit); }
+    .header-lijn { height: 3px; background: linear-gradient(90deg, transparent, var(--zilver), transparent); opacity: 0.4; }
+    .header-sub { text-align: center; padding: 10px 24px 18px; font-size: 0.78rem; color: rgba(255,255,255,0.55); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+    .wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 40px; max-width: 740px; margin: 0 auto; width: 100%; }
+    .intro-card { background: var(--wit); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 32px; margin-bottom: 24px; width: 100%; border-top: 4px solid var(--blauw); }
+    .intro-titel { font-weight: 800; font-size: 1.15rem; color: var(--blauw); margin-bottom: 10px; }
+    .intro-tekst { font-size: 0.93rem; color: var(--tekst-mid); line-height: 1.7; margin-bottom: 14px; }
+    .intro-list { padding-left: 20px; margin-bottom: 16px; }
+    .intro-list li { font-size: 0.93rem; color: var(--tekst-mid); line-height: 1.8; }
+    .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-top: 4px; }
+    .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .voortgang-wrapper { width: 100%; margin-bottom: 18px; }
+    .voortgang-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .voortgang-label { font-weight: 600; font-size: 0.85rem; color: var(--tekst-mid); }
+    .voortgang-track { height: 5px; background: var(--grijs-mid); border-radius: 99px; overflow: hidden; }
+    .voortgang-balk { height: 100%; background: linear-gradient(90deg, var(--blauw), var(--zilver)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+    .vraag-card { background: var(--wit); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px 36px; border-top: 4px solid var(--blauw); width: 100%; margin-bottom: 16px; }
+    .vraag-nummer { display: inline-block; background: var(--blauw); color: var(--zilver); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 12px; border-radius: 4px; margin-bottom: 14px; }
+    .vraag-tekst { font-family: 'Source Serif 4', serif; font-size: 1.05rem; line-height: 1.7; color: var(--tekst); margin-bottom: 20px; }
+    .antwoord-input { width: 100%; min-height: 120px; padding: 14px 16px; border: 2px solid var(--grijs-mid); border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: var(--tekst); background: var(--wit); resize: vertical; outline: none; transition: border-color 0.2s; line-height: 1.6; }
+    .antwoord-input:focus { border-color: var(--blauw-licht); background: #f8f9ff; }
+    .antwoord-input::placeholder { color: var(--zilver); }
+    .antwoord-input:disabled { background: var(--grijs-licht); color: var(--tekst-mid); }
+    .modelantwoord { display: none; margin-top: 16px; background: var(--groen-licht); border-left: 4px solid var(--groen); border-radius: 8px; padding: 16px 18px; animation: fadeIn 0.3s ease; }
+    .modelantwoord.zichtbaar { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .modelantwoord-label { font-size: 0.75rem; font-weight: 700; color: var(--groen); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .modelantwoord-tekst { font-size: 0.92rem; color: #145c38; line-height: 1.75; }
+    .modelantwoord-tekst p { margin-bottom: 10px; }
+    .modelantwoord-tekst p:last-child { margin-bottom: 0; }
+    .knop-rij { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .knop-controleer { background: var(--blauw); color: var(--wit); border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 12px 24px; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .knop-controleer:hover { background: var(--blauw-mid); }
+    .knop-controleer:active { transform: scale(0.98); }
+    .knop-controleer:disabled { background: var(--grijs-mid); color: var(--tekst-mid); cursor: default; }
+    .knop-vorige { background: transparent; color: var(--blauw); border: 2px solid var(--blauw); border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 11px 24px; cursor: pointer; transition: all 0.2s; display: none; }
+    .knop-vorige.zichtbaar { display: block; }
+    .knop-vorige:hover { background: var(--blauw); color: var(--wit); }
+    .knop-volgende { background: transparent; color: var(--blauw); border: 2px solid var(--blauw); border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 11px 24px; cursor: pointer; transition: all 0.2s; display: none; }
+    .knop-volgende.zichtbaar { display: block; }
+    .knop-volgende:hover { background: var(--blauw); color: var(--wit); }
+    .knop-afronden { background: var(--groen); color: var(--wit); border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 12px 24px; cursor: pointer; transition: background 0.2s; display: none; }
+    .knop-afronden.zichtbaar { display: block; }
+    .knop-afronden:hover { background: #155f39; }
+    .eind-card { background: var(--wit); border-radius: var(--radius); box-shadow: var(--shadow); padding: 48px 36px; border-top: 4px solid var(--groen); width: 100%; text-align: center; }
+    .eind-icoon { margin-bottom: 16px; }
+    .eind-titel { font-weight: 800; font-size: 1.8rem; color: var(--blauw); margin-bottom: 8px; }
+    .eind-tekst { font-size: 1rem; color: var(--tekst-mid); margin-bottom: 36px; line-height: 1.6; max-width: 480px; margin-left: auto; margin-right: auto; }
+    .eind-knoppen { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .knop-opnieuw { background: transparent; color: var(--blauw); border: 2px solid var(--blauw); border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 13px 22px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .knop-opnieuw:hover { background: var(--blauw); color: var(--wit); }
+    .knop-sluiten { background: var(--blauw); color: var(--wit); border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 14px 22px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 8px; }
+    .knop-sluiten:hover { background: var(--blauw-mid); }
+    .knop-overzicht { background: linear-gradient(135deg, #1a4a3e, #1a7a4a); color: var(--wit); border: none; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 14px 22px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(26,122,74,0.3); }
+    .knop-overzicht:hover { transform: translateY(-2px); }
+    .overzicht-card { background: var(--wit); border-radius: var(--radius); box-shadow: var(--shadow); padding: 36px; border-top: 4px solid var(--blauw); width: 100%; }
+    .overzicht-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+    .overzicht-titel { font-weight: 800; font-size: 1.5rem; color: var(--blauw); }
+    .overzicht-subtitle { font-size: 0.85rem; color: var(--tekst-mid); margin-top: 4px; }
+    .knop-terug { background: transparent; color: var(--blauw); border: 2px solid var(--blauw); border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.9rem; padding: 10px 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .knop-terug:hover { background: var(--blauw); color: var(--wit); }
+    .overzicht-item { border: 1px solid var(--grijs-mid); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+    .overzicht-item-header { background: var(--blauw); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+    .overzicht-nr { background: rgba(255,255,255,0.15); color: var(--zilver); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+    .overzicht-vraag-tekst { font-family: 'Source Serif 4', serif; font-size: 0.9rem; color: rgba(255,255,255,0.9); line-height: 1.5; }
+    .overzicht-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .overzicht-kolom { padding: 18px 20px; }
+    .overzicht-kolom-jouw { border-right: 1px solid var(--grijs-mid); background: #fafbff; }
+    .overzicht-kolom-model { background: #f5fbf7; }
+    .overzicht-kolom-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .overzicht-kolom-jouw .overzicht-kolom-label { color: var(--blauw); }
+    .overzicht-kolom-model .overzicht-kolom-label { color: var(--groen); }
+    .overzicht-antwoord { font-size: 0.9rem; line-height: 1.65; color: var(--tekst); }
+    .overzicht-antwoord.leeg { color: var(--zilver); font-style: italic; }
+    .scherm { display: none; width: 100%; }
+    .scherm.actief { display: flex; flex-direction: column; align-items: center; }
+    .quiz-footer { text-align: center; padding: 16px; font-size: 0.75rem; color: var(--tekst-mid); opacity: 0.6; }
+    @media (max-width: 560px) {
+      .vraag-card, .intro-card { padding: 22px 18px; }
+      .overzicht-body { grid-template-columns: 1fr; }
+      .overzicht-kolom-jouw { border-right: none; border-bottom: 1px solid var(--grijs-mid); }
+      .eind-knoppen { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="quiz-header">
+  <div class="header-inner">
+    <svg class="header-schild" viewBox="0 0 36 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 0L36 8V22C36 32 28 39 18 42C8 39 0 32 0 22V8L18 0Z" fill="#8a9ab5" opacity="0.3"/>
+      <path d="M18 3L33 10V22C33 31 26 37.5 18 40C10 37.5 3 31 3 22V10L18 3Z" fill="#8a9ab5" opacity="0.5"/>
+      <text x="18" y="27" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="800" font-size="14" fill="white">JS</text>
+    </svg>
+    <span class="logo-tekst">Legal Force</span>
+  </div>
+  <div class="header-lijn"></div>
+  <p class="header-sub">Praktijkopdracht — Gebruik handboeien voor BOA's</p>
+</header>
+
+<main class="wrapper">
+
+  <!-- INTROSCHERM -->
+  <div id="scherm-intro" class="scherm actief">
+    <div class="intro-card">
+      <div class="intro-titel">Praktijkopdracht – Gebruik handboeien</div>
+      <p class="intro-tekst">Je hebt de kennisclip over het gebruik van handboeien bekeken. In deze praktijkopdracht beoordeel je aan de hand van een praktijksituatie of het gebruik van handboeien voldoet aan de wettelijke voorwaarden.</p>
+      <p class="intro-tekst">Bekijk eerst het onderstaande YouTube-filmpje. Beantwoord daarna de vragen op basis van de situatie, artikel 22 van de Ambtsinstructie en de geldende wet- en regelgeving. De praktijkopdracht kan zelfstandig of in groepsverband worden uitgevoerd.</p>
+      <p class="intro-tekst" style="font-weight:700;color:var(--blauw);">Casus</p>
+      <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/RvaT0zaK6wA" title="Praktijkopdracht Gebruik handboeien" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+    <button class="knop-controleer" style="width:100%;max-width:740px;margin-top:0;" onclick="startOpdracht()">Start de opdracht &#8594;</button>
+  </div>
+
+  <!-- VRAAGSCHERM -->
+  <div id="scherm-vraag" class="scherm">
+    <div class="casus-kaart" style="background:#f8faff;border:1px solid #dbe5f5;border-left:4px solid var(--blauw);border-radius:8px;padding:14px 18px;margin-bottom:18px;font-size:14px;line-height:1.55;color:#334155;">
+      <div style="font-weight:700;color:var(--blauw);font-size:13px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">Casus</div>
+      <p style="margin:0;">In het YouTube-filmpje zie je hoe boa's een verdachte aanhouden en handboeien aanleggen.</p>
+    </div>
+
+    <div class="voortgang-wrapper">
+      <div class="voortgang-header">
+        <span id="voortgang-tekst" class="voortgang-label">Vraag 1 van 5</span>
+      </div>
+      <div class="voortgang-track">
+        <div id="voortgang-balk" class="voortgang-balk"></div>
+      </div>
+    </div>
+    <div class="vraag-card">
+      <div id="vraag-nummer" class="vraag-nummer">Vraag 1 van 5</div>
+      <p id="vraag-tekst" class="vraag-tekst"></p>
+      <textarea id="antwoord-input" class="antwoord-input" placeholder="Typ hier je antwoord..."></textarea>
+      <div id="modelantwoord" class="modelantwoord">
+        <div class="modelantwoord-label">&#10003; Modelantwoord</div>
+        <div id="modelantwoord-tekst" class="modelantwoord-tekst"></div>
+      </div>
+      <div class="knop-rij">
+        <button id="knop-controleer" class="knop-controleer" onclick="controleer()">Controleer antwoord</button>
+        <button id="knop-vorige" class="knop-vorige" onclick="vorige()">&#8592; Vorige vraag</button>
+        <button id="knop-volgende" class="knop-volgende" onclick="volgende()">Volgende vraag &#8594;</button>
+        <button id="knop-afronden" class="knop-afronden" onclick="afronden()">Opdracht afronden &#10003;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EINDSCHERM -->
+  <div id="scherm-einde" class="scherm">
+    <div class="eind-card">
+      <div class="eind-icoon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1a7a4a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2 class="eind-titel">Opdracht afgerond!</h2>
+      <p class="eind-tekst">Je hebt alle 5 vragen doorlopen en de modelantwoorden bekeken. Bekijk het overzicht om jouw antwoorden te vergelijken met de modelantwoorden.</p>
+      <div class="eind-knoppen">
+        <button class="knop-opnieuw" onclick="herstart()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.5"></path></svg>
+          Opnieuw beginnen
+        </button>
+        <button class="knop-overzicht" onclick="toonOverzicht()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Bekijk mijn antwoorden
+        </button>
+        <button class="knop-sluiten" onclick="window.close()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          Venster sluiten
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERZICHTSCHERM -->
+  <div id="scherm-overzicht" class="scherm">
+    <div class="overzicht-card">
+      <div class="overzicht-header">
+        <div>
+          <div class="overzicht-titel">Overzicht antwoorden</div>
+          <div class="overzicht-subtitle">Jouw antwoorden vergeleken met de modelantwoorden</div>
+        </div>
+        <button class="knop-terug" onclick="toonEinde()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Terug
+        </button>
+      </div>
+      <div id="overzicht-inhoud"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="quiz-footer">&copy; JS Legal Force — Praktijkopdracht Gebruik handboeien voor BOA's</footer>
+
+<script>
+const vragen = [
+      {
+        vraag: "Is de verdachte in deze situatie rechtens van zijn vrijheid beroofd? Motiveer je antwoord en noem de wettelijke grondslag.",
+        antwoord: "<p>Ja. De verdachte is op heterdaad aangehouden wegens overtreding van een reisverbod (overtreding van de Wet personenvervoer 2000). Door deze aanhouding is hij rechtens van zijn vrijheid beroofd. De wettelijke grondslag voor de aanhouding is artikel 53 van het Wetboek van Strafvordering.</p>"
+      },
+      {
+        vraag: "Is in deze situatie sprake van vervoer van de verdachte of uitsluitend van een verplaatsing? Motiveer je antwoord.",
+        antwoord: "<p>Er is sprake van vervoer. De verdachte wordt vanaf het perron overgebracht naar een politiebureau om te worden voorgeleid aan een hulpofficier van justitie. Daarmee is geen sprake van een korte verplaatsing, zoals bijvoorbeeld binnen een politiebureau van de ophoudruimte naar de cellengang, maar daadwerkelijk van vervoer.</p>"
+      },
+      {
+        vraag: "Bestaat in deze situatie een risico dat de verdachte zal vluchten? Motiveer je antwoord.",
+        antwoord: "<p>Ja. De verdachte wordt over een grotere afstand vervoerd via een drukke locatie in het openbaar vervoer. Hierdoor bestaat een reëel risico dat de verdachte zal proberen te vluchten.</p>"
+      },
+      {
+        vraag: "Is sprake van gevaar voor de veiligheid van de boa's, andere personen of de verdachte zelf? Motiveer je antwoord.",
+        antwoord: "<p>Ja. De verdachte heeft zich eerder verzet tegen een aanhouding en daarbij geweld gebruikt. Dat verzet heeft geleid tot een strafbaar feit en uiteindelijk tot het opleggen van een reisverbod. Ondanks dit reisverbod is de verdachte opnieuw aangetroffen. De verdachte heeft zich hier dus kennelijk niets van aangetrokken. Gelet op het voorgaande bestaat een reëel risico dat hij zich opnieuw agressief of gewelddadig zal gedragen.</p>"
+      },
+      {
+        vraag: "Voldoet het gebruik van handboeien in deze situatie aan de wettelijke voorwaarden? Motiveer je antwoord.",
+        antwoord: "<p>Ja. De verdachte is rechtens van zijn vrijheid beroofd en wordt vervoerd naar een politiebureau ter geleiding voor een hulpofficier van justitie. Daarnaast bestaat een reëel risico op vlucht vanwege het vervoer over een drukke openbare locatie en een reëel veiligheidsrisico vanwege het recente verzet bij een eerdere aanhouding.</p><p>Gelet op deze omstandigheden voldoet het gebruik van handboeien aan de voorwaarden van artikel 22 van de Ambtsinstructie.</p>"
+      }
+    ];
+
+let huidig = 0;
+const mijnAntwoorden = new Array(vragen.length).fill('');
+const gecontroleerd = new Array(vragen.length).fill(false);
+
+function startOpdracht() {
+  try {
+    document.getElementById('scherm-intro').classList.remove('actief');
+    document.getElementById('scherm-vraag').classList.add('actief');
+    laadVraag(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {
+    console.error('startOpdracht:', e);
+  }
+}
+
+function laadVraag(i) {
+  document.getElementById('vraag-tekst').textContent = vragen[i].vraag;
+  document.getElementById('vraag-nummer').textContent = 'Vraag ' + (i+1) + ' van ' + vragen.length;
+  document.getElementById('voortgang-tekst').textContent = 'Vraag ' + (i+1) + ' van ' + vragen.length;
+  document.getElementById('voortgang-balk').style.width = ((i/vragen.length)*100) + '%';
+  document.getElementById('antwoord-input').value = mijnAntwoorden[i] || '';
+  if (gecontroleerd[i]) {
+    document.getElementById('antwoord-input').disabled = true;
+    document.getElementById('knop-controleer').disabled = true;
+    document.getElementById('modelantwoord-tekst').innerHTML = vragen[i].antwoord;
+    document.getElementById('modelantwoord').classList.add('zichtbaar');
+    if (i < vragen.length - 1) {
+      document.getElementById('knop-volgende').classList.add('zichtbaar');
+    } else {
+      document.getElementById('knop-afronden').classList.add('zichtbaar');
+      document.getElementById('voortgang-balk').style.width = '100%';
+    }
+  } else {
+    document.getElementById('antwoord-input').disabled = false;
+    document.getElementById('knop-controleer').disabled = false;
+    document.getElementById('modelantwoord').classList.remove('zichtbaar');
+    document.getElementById('modelantwoord-tekst').innerHTML = '';
+    document.getElementById('knop-volgende').classList.remove('zichtbaar');
+    document.getElementById('knop-afronden').classList.remove('zichtbaar');
+  }
+  if (i > 0) {
+    document.getElementById('knop-vorige').classList.add('zichtbaar');
+  } else {
+    document.getElementById('knop-vorige').classList.remove('zichtbaar');
+  }
+}
+
+function controleer() {
+  mijnAntwoorden[huidig] = document.getElementById('antwoord-input').value.trim();
+  gecontroleerd[huidig] = true;
+  document.getElementById('modelantwoord-tekst').innerHTML = vragen[huidig].antwoord;
+  document.getElementById('modelantwoord').classList.add('zichtbaar');
+  document.getElementById('antwoord-input').disabled = true;
+  document.getElementById('knop-controleer').disabled = true;
+  document.getElementById('modelantwoord').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (huidig < vragen.length - 1) {
+    document.getElementById('knop-volgende').classList.add('zichtbaar');
+  } else {
+    document.getElementById('knop-afronden').classList.add('zichtbaar');
+    document.getElementById('voortgang-balk').style.width = '100%';
+  }
+}
+
+function vorige() {
+  if (huidig > 0) {
+    huidig--;
+    laadVraag(huidig);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function volgende() {
+  huidig++;
+  laadVraag(huidig);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function afronden() {
+  document.getElementById('scherm-vraag').classList.remove('actief');
+  document.getElementById('scherm-einde').classList.add('actief');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toonOverzicht() {
+  const inhoud = document.getElementById('overzicht-inhoud');
+  inhoud.innerHTML = '';
+  vragen.forEach((v, i) => {
+    const jouwAntwoord = mijnAntwoorden[i] || '';
+    const item = document.createElement('div');
+    item.className = 'overzicht-item';
+    item.innerHTML =
+      '<div class="overzicht-item-header"><span class="overzicht-nr">Vraag ' + (i+1) + '</span><span class="overzicht-vraag-tekst">' + v.vraag + '</span></div>' +
+      '<div class="overzicht-body">' +
+        '<div class="overzicht-kolom overzicht-kolom-jouw">' +
+          '<div class="overzicht-kolom-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Jouw antwoord</div>' +
+          '<div class="overzicht-antwoord' + (jouwAntwoord ? '' : ' leeg') + '">' + (jouwAntwoord ? jouwAntwoord.split('\n').join('<br>') : 'Geen antwoord ingevuld') + '</div>' +
+        '</div>' +
+        '<div class="overzicht-kolom overzicht-kolom-model">' +
+          '<div class="overzicht-kolom-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>Modelantwoord</div>' +
+          '<div class="overzicht-antwoord">' + v.antwoord + '</div>' +
+        '</div>' +
+      '</div>';
+    inhoud.appendChild(item);
+    if (i < vragen.length - 1) {
+      const div = document.createElement('div');
+      div.style.height = '8px';
+      inhoud.appendChild(div);
+    }
+  });
+  document.getElementById('scherm-einde').classList.remove('actief');
+  document.getElementById('scherm-overzicht').classList.add('actief');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toonEinde() {
+  document.getElementById('scherm-overzicht').classList.remove('actief');
+  document.getElementById('scherm-einde').classList.add('actief');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function herstart() {
+  huidig = 0;
+  mijnAntwoorden.fill('');
+  gecontroleerd.fill(false);
+  document.getElementById('scherm-einde').classList.remove('actief');
+  document.getElementById('scherm-overzicht').classList.remove('actief');
+  document.getElementById('scherm-vraag').classList.remove('actief');
+  document.getElementById('scherm-intro').classList.add('actief');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
